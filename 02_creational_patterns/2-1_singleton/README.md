@@ -1,4 +1,4 @@
-# Singleton Patterns
+# Singleton Design Pattern
 
 having a unique instance of a type in the entire program
 
