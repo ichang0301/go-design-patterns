@@ -12,3 +12,7 @@ delegating the creation of different types of payments
 
 The trip agency represents a Factory of trips.
 You don't deal with hotels and traveling and you just tell the agency the destination you are interested in so that they provide you with everything you need.
+
+## Cautions
+
+- Tests must be written with care if you don't want to tie yourself to certain implementations that don't have anything to do with the tests directly.

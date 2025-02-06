@@ -1,6 +1,7 @@
 package factory
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -24,7 +25,7 @@ func TestGetPaymentMethodDebitCard(t *testing.T) {
 	}
 
 	msg := payment.Pay(22.30)
-	if msg != "22.30 paid using debit card\n" {
+	if strings.Contains(msg, "paid using debit card") == false {
 		t.Errorf("The debit card payment method message was not correct")
 	}
 	t.Log("LOG:", msg)
