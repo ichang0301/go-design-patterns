@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/ichang0301/go-design-patterns/03_structural_patterns/3-1_composite/3-1-1_direct_composition/compositions"
+	"github.com/ichang0301/go-design-patterns/03_structural_patterns1/3-1_composite/3-1-1_direct_composition/compositions"
 )
 
 func Swim() {
