@@ -57,6 +57,7 @@ func captureBarrierOutput(endpoints ...string) string {
 		return ""
 	}
 
+	originalStdout := os.Stdout
 	os.Stdout = writer
 	out := make(chan string)
 	go func() {
@@ -68,6 +69,8 @@ func captureBarrierOutput(endpoints ...string) string {
 	barrier(endpoints...)
 
 	writer.Close()
+	os.Stdout = originalStdout
+
 	temp := <-out
 	return temp
 }
