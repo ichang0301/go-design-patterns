@@ -1,5 +1,7 @@
 package future
 
+import "fmt"
+
 type ExecuteStringFunc func() (string, error)
 type SuccessFunc func(string)
 type FailFunc func(error)
@@ -29,4 +31,11 @@ func (s *MaybeString) Execute(fn ExecuteStringFunc) *MaybeString {
 		}
 	}(s)
 	return s
+}
+
+func setContext(msg string) ExecuteStringFunc {
+	msg = fmt.Sprintf("%s Closure\n", msg)
+	return func() (string, error) {
+		return msg, nil
+	}
 }

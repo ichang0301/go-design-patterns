@@ -9,7 +9,7 @@ import (
 
 func TestStringOrError_Execute(t *testing.T) {
 	future := &MaybeString{}
-	t.Run("Success result", func(t *testing.T) {
+	t.Run("Success_result", func(t *testing.T) {
 		var wg sync.WaitGroup
 		wg.Add(1)
 
@@ -30,7 +30,7 @@ func TestStringOrError_Execute(t *testing.T) {
 		wg.Wait()
 	})
 
-	t.Run("Error result", func(t *testing.T) {
+	t.Run("Error_result", func(t *testing.T) {
 		var wg sync.WaitGroup
 		wg.Add(1)
 
@@ -47,6 +47,26 @@ func TestStringOrError_Execute(t *testing.T) {
 		future.Execute(func() (string, error) {
 			return "", errors.New("an error occurred")
 		})
+
+		wg.Wait()
+	})
+
+	t.Run("Closure_Success_result", func(t *testing.T) {
+		var wg sync.WaitGroup
+		wg.Add(1)
+
+		go timeout(t, &wg)
+
+		future := &MaybeString{}
+		future.Success(func(s string) {
+			t.Log(s)
+			wg.Done()
+		}).Fail(func(e error) {
+			t.Fail()
+			wg.Done()
+		})
+
+		future.Execute(setContext("Hello"))
 
 		wg.Wait()
 	})
