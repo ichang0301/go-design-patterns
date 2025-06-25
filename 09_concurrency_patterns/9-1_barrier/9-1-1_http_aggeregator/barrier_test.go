@@ -3,16 +3,37 @@ package barrier
 import (
 	"bytes"
 	"io"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestBarrier(t *testing.T) {
+	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case "/headers":
+			if timeoutMilliseconds == 1 {
+				time.Sleep(10 * time.Millisecond) // induce timeout
+			}
+			w.Write([]byte("Accept-Encoding: gzip"))
+		case "/user-agent":
+			if timeoutMilliseconds == 1 {
+				time.Sleep(10 * time.Millisecond) // induce timeout
+			}
+			w.Write([]byte("user-agent: test"))
+		default:
+			http.Error(w, "not found", http.StatusNotFound)
+		}
+	}))
+	defer mockServer.Close()
+
 	t.Run("Correct endpoints", func(t *testing.T) {
 		endpoints := []string{
-			"http://httpbin.org/headers",
-			"http://httpbin.org/user-agent",
+			mockServer.URL + "/headers",
+			mockServer.URL + "/user-agent",
 		}
 
 		result := captureBarrierOutput(endpoints...)
@@ -25,7 +46,7 @@ func TestBarrier(t *testing.T) {
 	t.Run("One endpoint incorrect", func(t *testing.T) {
 		endpoints := []string{
 			"http://malformed-url",
-			"http://httpbin.org/user-agent",
+			mockServer.URL + "/user-agent",
 		}
 
 		result := captureBarrierOutput(endpoints...)
@@ -37,8 +58,8 @@ func TestBarrier(t *testing.T) {
 
 	t.Run("Very short timeout", func(t *testing.T) {
 		endpoints := []string{
-			"http://httpbin.org/headers",
-			"http://httpbin.org/user-agent",
+			mockServer.URL + "/headers",
+			mockServer.URL + "/user-agent",
 		}
 
 		timeoutMilliseconds = 1
